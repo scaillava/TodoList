@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Todo.Api.ViewModels
 {
@@ -11,11 +7,8 @@ namespace Todo.Api.ViewModels
         [Required]
         [EmailAddress]
         public string Email { get; set; }
-
         [Required]
         [DataType(DataType.Password)]
         public string Password { get; set; }
-
-       
     }
 }
