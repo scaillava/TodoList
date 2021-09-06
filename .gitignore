@@ -3,3 +3,9 @@
 ################################################################################
 
 /Todo.Api/bin/Debug/netcoreapp3.1
+/.vs
+/Todo.Api/obj
+/Todo.Domain/bin/Debug/netcoreapp3.1
+/Todo.Domain/obj
+/Todo.Models/bin/Debug/netcoreapp3.1
+/Todo.Models/obj
