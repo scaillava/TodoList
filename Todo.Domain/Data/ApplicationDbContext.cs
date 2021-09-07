@@ -22,12 +22,12 @@ namespace Todo.Domain.Data
             // Add your customizations after calling base.OnModelCreating(builder);
             builder.Entity<Models.Todo>()
             .HasIndex(p => new { p.Id, p.AspNetUsersId });
-            builder.Entity<Models.TodoCheck>()
+            builder.Entity<Models.TodoTask>()
             .HasIndex(p => new { p.Id, p.TodoId });
 
         }
         public DbSet<Models.Todo> TodoEntity { get; set; }
-        public DbSet<Models.TodoCheck> TodoCheckEntity { get; set; }
+        public DbSet<Models.TodoTask> TodoTaskEntity { get; set; }
 
 
         public string GetUserId(System.Security.Claims.ClaimsPrincipal User)

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Todo.Domain.Models
 {
-    public class TodoCheck
+    public class TodoTask
     {
         public int Id { get; set; }
         public int TodoId { get; set; }
