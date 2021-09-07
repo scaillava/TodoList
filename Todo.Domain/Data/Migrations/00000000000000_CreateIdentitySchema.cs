@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 using System;
 
-namespace Todo.Data.Migrations
+namespace Todo.Domain.Data.Migrations
 {
     public partial class CreateIdentitySchema : Migration
     {
