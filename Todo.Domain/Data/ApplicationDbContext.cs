@@ -28,6 +28,7 @@ namespace Todo.Domain.Data
         }
         public DbSet<Models.Todo> TodoEntity { get; set; }
         public DbSet<Models.TodoTask> TodoTaskEntity { get; set; }
+        public DbSet<Models.UserToken> TokenEntity { get; set; }
 
 
         public string GetUserId(System.Security.Claims.ClaimsPrincipal User)

@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Todo.Domain.Data;
 
 namespace Todo.Domain.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210908180655_add-usertokens")]
+    partial class addusertokens
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -380,6 +382,9 @@ namespace Todo.Domain.Data.Migrations
 
                     b.Property<string>("AspNetUserId")
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("AspNetUsersId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Expiration")
                         .HasColumnType("datetime2");
