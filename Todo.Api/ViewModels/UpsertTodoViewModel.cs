@@ -18,8 +18,19 @@ namespace Todo.Api.ViewModels
         [DataMember]
         public int Position { get; set; }
         [DataMember]
-        public List<UpsertTodoTaskViewModel> TodoChecks { get; set; }
+        public List<UpsertTodoTaskViewModel> TodoTasks { get; set; }
     }
-
+    public class UpsertTodoTaskViewModel
+    {
+        [DataMember]
+        public int Id { get; set; }
+        [DataMember]
+        public int Position { get; set; }
+        [DataMember]
+        [Required]
+        public string TaskDescription { get; set; }
+        [DataMember]
+        public bool Done { get; set; }
+    }
 
 }

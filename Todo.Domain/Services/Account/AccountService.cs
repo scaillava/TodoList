@@ -16,7 +16,7 @@ namespace Todo.Domain.Services.Account
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ApplicationDbContext _applicationDbContext;
-
+        private const int _expirationHours = 5;
         public AccountService(UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager, ApplicationDbContext applicationDbContext)
         {
@@ -27,10 +27,10 @@ namespace Todo.Domain.Services.Account
 
         public async Task<UserToken> Login(string email, string password)
         {
-            var result = await _signInManager.PasswordSignInAsync(email, password, false, lockoutOnFailure: false);
+            var applicationUser = await _applicationDbContext.Users.FirstOrDefaultAsync(x => x.Email.ToLower() == email.ToLower());
+            var result = await _signInManager.CheckPasswordSignInAsync(applicationUser, password, false);
             if (result.Succeeded)
             {
-                var applicationUser = await _applicationDbContext.Users.FirstOrDefaultAsync(x => x.Email.ToLower() == email.ToLower());
                 UserToken userToken = await _applicationDbContext.TokenEntity.Where(x => x.AspNetUserId == applicationUser.Id).FirstOrDefaultAsync();
                 if (userToken == null)
                 {
@@ -60,18 +60,26 @@ namespace Todo.Domain.Services.Account
 
         public async Task<IEnumerable<IdentityError>> Register(string name, string email, string password)
         {
-            var user = new ApplicationUser { UserName = name, Email = email };
-            var result = await _userManager.CreateAsync(user, password);
-            if (result.Succeeded)
+            try
             {
-                return null;
+                var user = new ApplicationUser { UserName = name, Email = email };
+                var result = await _userManager.CreateAsync(user, password);
+                if (result.Succeeded)
+                {
+                    return null;
+                }
+                return result.Errors;
             }
-            return result.Errors;
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
         }
 
         public int GetExpirationHours()
         {
-            return 5;
+            return _expirationHours;
         }
     }
 }

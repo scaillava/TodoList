@@ -29,7 +29,7 @@ namespace Todo.Api.Controllers
             _mapper = mapper;
         }
 
-        [ProducesResponseType(typeof(List<Domain.Models.Todo>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<TodoResponseViewModel>), StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<IActionResult> GetTodoLists()
         {
@@ -38,7 +38,7 @@ namespace Todo.Api.Controllers
                 var result = await _todoInterface.GetTodoLists(User);
                 if (result != null)
                 {
-                    return Ok(result);
+                    return Ok(_mapper.Map<List<TodoResponseViewModel>>(result));
                 }
                 return NoContent();
             }
@@ -59,7 +59,7 @@ namespace Todo.Api.Controllers
                 var result = await _todoInterface.GetTodoList(id, User);
                 if (result != null)
                 {
-                    return Ok(result);
+                    return Ok(_mapper.Map<TodoResponseViewModel>(result));
                 }
                 return NotFound();
             }
@@ -69,9 +69,9 @@ namespace Todo.Api.Controllers
             }
         }
 
-        [ProducesResponseType(typeof(Domain.Models.Todo), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(TodoResponseViewModel), StatusCodes.Status200OK)]
         [Route("{id}")]
-        [HttpGet]
+        [HttpDelete]
         public async Task<IActionResult> DeleteTodoList([FromRoute] int id)
         {
             try
@@ -79,7 +79,7 @@ namespace Todo.Api.Controllers
                 var result = await _todoInterface.DeleteTodoList(id, User);
                 if (result != null)
                 {
-                    return Ok(result);
+                    return Ok(_mapper.Map<TodoResponseViewModel>(result));
                 }
                 return NotFound();
             }
@@ -90,7 +90,7 @@ namespace Todo.Api.Controllers
         }
 
 
-        [ProducesResponseType(typeof(Domain.Models.Todo), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(TodoResponseViewModel), StatusCodes.Status200OK)]
         [HttpPost]
         public async Task<IActionResult> PostTodoList([FromBody] UpsertTodoViewModel upsertTodoViewModel)
         {
@@ -101,7 +101,7 @@ namespace Todo.Api.Controllers
                     var result = await _todoInterface.CreateTodoList(_mapper.Map<Domain.Models.Todo>(upsertTodoViewModel), User);
                     if (result != null)
                     {
-                        return Ok(result);
+                        return Ok(_mapper.Map<TodoResponseViewModel>(result));
                     }
                 }
                 return BadRequest();
@@ -123,7 +123,7 @@ namespace Todo.Api.Controllers
                     var result = await _todoInterface.UpdateTodoList(_mapper.Map<Domain.Models.Todo>(upsertTodoViewModel), User);
                     if (result != null)
                     {
-                        return Ok(result);
+                        return Ok(_mapper.Map<TodoResponseViewModel>(result));
                     }
                 }
                 return BadRequest();

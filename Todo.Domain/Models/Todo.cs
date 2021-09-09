@@ -14,10 +14,8 @@ namespace Todo.Domain.Models
         public DateTime Created { get; set; }
         public DateTime Edited { get; set; }
         public DateTime? Deleted { get; set; }
-        [Required]
-        public virtual ICollection<TodoTask> TodoChecks { get; set; }
-        public virtual ApplicationUser AspNetUser { get; set; }
-        public string AspNetUsersId { get; set; }
+        public virtual ICollection<TodoTask> TodoTasks { get; set; }
+        public string AspNetUserId { get; set; }
 
 
     }

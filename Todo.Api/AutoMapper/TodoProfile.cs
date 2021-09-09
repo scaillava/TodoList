@@ -13,7 +13,11 @@ namespace Todo.Api.AutoMapper
         {
             CreateMap<UpsertTodoTaskViewModel, Domain.Models.TodoTask>();
             CreateMap<UpsertTodoViewModel, Domain.Models.Todo>()
-                .ForMember(dest => dest.TodoChecks, act => act.MapFrom(src => src.TodoChecks));
+                .ForMember(dest => dest.TodoTasks, act => act.MapFrom(src => src.TodoTasks));
+
+            CreateMap<Domain.Models.Todo, TodoResponseViewModel>()
+                .ForMember(dest => dest.TodoTasks, act => act.MapFrom(src => src.TodoTasks));
+            CreateMap<Domain.Models.TodoTask, TodoTaskResponseViewModel>();
         }
     }
 }

@@ -19,7 +19,7 @@ namespace Todo.Domain.Services.Todo
             try
             {
                 return await _applicationDbContext.TodoEntity
-                    .Where(x => x.Id == id && x.AspNetUsersId == _applicationDbContext.GetUserId(User)).Include(x => x.TodoChecks).FirstOrDefaultAsync();
+                    .Where(x => x.Id == id && x.AspNetUserId == _applicationDbContext.GetUserId(User)).Include(x => x.TodoTasks).FirstOrDefaultAsync();
             }
             catch (Exception ex)
             {
@@ -31,7 +31,7 @@ namespace Todo.Domain.Services.Todo
             try
             {
                 return await _applicationDbContext.TodoEntity
-                    .Where(x => x.AspNetUsersId == _applicationDbContext.GetUserId(User) && x.Deleted == null).Include(x => x.TodoChecks).ToListAsync();
+                    .Where(x => x.AspNetUserId == _applicationDbContext.GetUserId(User) && x.Deleted == null).Include(x => x.TodoTasks).ToListAsync();
             }
             catch (Exception ex)
             {
@@ -43,26 +43,19 @@ namespace Todo.Domain.Services.Todo
         {
             try
             {
-                if (todo.TodoChecks.Count() > 0 && !todo.TodoChecks.ToList().Exists(x => x.Id == 0))
+                todo.Id = 0;
+                todo.Created = DateTime.Now;
+                todo.Edited = DateTime.Now;
+                todo.Deleted = null;
+                todo.AspNetUserId = _applicationDbContext.GetUserId(User);
+                foreach (var todoTask in todo.TodoTasks)
                 {
-                    todo.Id = 0;
-                    todo.Created = DateTime.Now;
-                    todo.Edited = DateTime.Now;
-                    todo.Deleted = null;
-                    todo.AspNetUsersId = _applicationDbContext.GetUserId(User);
-                    _applicationDbContext.Add(todo);
-                    await _applicationDbContext.SaveChangesAsync();
-                    foreach (var todoCheck in todo.TodoChecks)
-                    {
-                        todoCheck.TodoId = todo.Id;
-                        //todoCheck.Created = DateTime.Now;
-                        todoCheck.Edited = DateTime.Now;
-                        _applicationDbContext.Add(todoCheck);
-                    }
-                    await _applicationDbContext.SaveChangesAsync();
+                    todoTask.Id = 0;
+                    todoTask.Edited = DateTime.Now;
                 }
-
-                return await _applicationDbContext.TodoEntity.FirstOrDefaultAsync(x => x.Id == todo.Id && x.AspNetUsersId == _applicationDbContext.GetUserId(User));
+                _applicationDbContext.Add(todo);
+                await _applicationDbContext.SaveChangesAsync();
+                return todo;
             }
             catch (Exception ex)
             {
@@ -73,36 +66,42 @@ namespace Todo.Domain.Services.Todo
         {
             try
             {
-                Models.Todo _todo = await _applicationDbContext.TodoEntity.FirstOrDefaultAsync(x => x.Id == todo.Id && x.AspNetUsersId == _applicationDbContext.GetUserId(User));
+                Models.Todo _todo = await _applicationDbContext.TodoEntity.Where(x => x.Id == todo.Id && x.AspNetUserId == _applicationDbContext.GetUserId(User)).Include(x=>x.TodoTasks).FirstOrDefaultAsync();
                 if (_todo != null)
                 {
-                    todo.Edited = DateTime.Now;
-                    todo.Deleted = null;
-                    _applicationDbContext.Update(todo);
-                    foreach (var todoCheck in _todo.TodoChecks)
+                    _todo.Edited = DateTime.Now;
+                    _todo.Deleted = null;
+                    _todo.Title = todo.Title;
+                    _todo.Position = todo.Position;
+                    _applicationDbContext.TodoEntity.Update(_todo);
+                    foreach (var _todoTask in _todo.TodoTasks)
                     {
-                        if (!todo.TodoChecks.ToList().Exists(x => x.Id == todo.Id))
+                        var todoTask = todo.TodoTasks.ToList().FirstOrDefault((x => x.Id == _todoTask.Id));
+                        if (todoTask == null)
                         {
-                            _applicationDbContext.Remove(todoCheck);
-                        }
-                    }
-                    foreach (var todoCheck in todo.TodoChecks)
-                    {
-                        if (todoCheck.Id == 0)
-                        {
-                            todoCheck.TodoId = todo.Id;
-                            todoCheck.Edited = DateTime.Now;
-                            _applicationDbContext.Add(todoCheck);
+                            _applicationDbContext.Remove(_todoTask);
                         }
                         else
                         {
-                            todoCheck.Edited = DateTime.Now;
-                            _applicationDbContext.Update(todoCheck);
+                            _todoTask.Edited = DateTime.Now;
+                            _todoTask.Position = todoTask.Position;
+                            _todoTask.TaskDescription = todoTask.TaskDescription;
+                            _todoTask.Done = todoTask.Done;
+                            _applicationDbContext.Update(_todoTask);
+                        }
+                    }
+                    foreach (var todoTask in todo.TodoTasks)
+                    {
+                        if (todoTask.Id == 0)
+                        {
+                            todoTask.TodoId = _todo.Id;
+                            todoTask.Edited = DateTime.Now;
+                            _applicationDbContext.Add(todoTask);
                         }
 
                     }
                     await _applicationDbContext.SaveChangesAsync();
-                    return await _applicationDbContext.TodoEntity.FirstOrDefaultAsync(x => x.Id == todo.Id && x.AspNetUsersId == _applicationDbContext.GetUserId(User));
+                    return _todo;
                 }
                 return null;
 
@@ -118,14 +117,14 @@ namespace Todo.Domain.Services.Todo
         {
             try
             {
-                Models.Todo _todo = await _applicationDbContext.TodoEntity.FirstOrDefaultAsync(x => x.Id == id && x.AspNetUsersId == _applicationDbContext.GetUserId(User) && x.Deleted == null);
+                Models.Todo _todo = await _applicationDbContext.TodoEntity.FirstOrDefaultAsync(x => x.Id == id && x.AspNetUserId == _applicationDbContext.GetUserId(User) && x.Deleted == null);
                 if (_todo != null)
                 {
                     _todo.Edited = DateTime.Now;
                     _todo.Deleted = DateTime.Now;
                     _applicationDbContext.Update(_todo);
                     await _applicationDbContext.SaveChangesAsync();
-                    return await _applicationDbContext.TodoEntity.FirstOrDefaultAsync(x => x.Id == id && x.AspNetUsersId == _applicationDbContext.GetUserId(User));
+                    return _todo;
                 }
                 return null;
 
